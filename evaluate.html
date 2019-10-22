@@ -1,0 +1,20 @@
+<html>
+<head>
+<title>Emoji to Image</title>
+<script src="//twemoji.maxcdn.com/twemoji.min.js"></script>
+<script>
+function parse() {
+var o = document.getElementById("output");
+var text = document.getElementById("in").value;
+o.innerHTML = text.replace(/\n/g,"<br/>").replace(/ /g,"&nbsp");
+twemoji.parse(o);
+}
+</script>
+</head>
+<body>
+<h1>Emoji to Image</h1>
+<textarea id="in" rows="10" cols="50"></textarea>
+<input type="submit" onclick="parse()" />
+<div id="output"></div>
+</body>
+</html>
