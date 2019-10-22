@@ -1,0 +1,301 @@
+<html>
+<head>
+<script src="//twemoji.maxcdn.com/twemoji.min.js"></script>  
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+<script type="text/javascript">
+var context, nest;
+var ops = [[57116,"("],[57115,")"]];
+var ops2 = [[56399,"+"],[56908,"-"],[56421,"*"],[56455,"/"],[56397,"++"],[56398,"--"],[56396,"=="]
+,[56865,"&&"],[56911,"||"],[56351,"<"],[56352,"<="],[56364,">="],[56371,">"],[56860,"!"],[56861,"!="]];
+var funcs = [[56890,"prompt"],[56887,"parseInt"],[56388,"alert"]];
+var files = []; 
+
+document.title="Ox++ -- Emoji Javascript Pre-Processor " + String.fromCharCode(55357,56322,55357,56397);
+
+$(document).ready(function() {
+$.get("programs.json", function(data) {
+files = data.programs;
+for(var x in files) {
+  var option =  document.createElement("option");
+  option.value=files[x].code;
+  option.text = files[x].title;
+  programs.add(option);
+}
+});
+});
+
+function loadProgram() {
+var i = programs.selectedIndex;
+if(i == 0) {
+program.value = "";
+desc.innerHTML = "";
+}
+else {
+program.value = programs.value;
+var d = files[i-1].description;
+desc.innerHTML = d ? " "+d : "";
+}
+ run();
+}
+
+
+function run() {
+	check();
+    context = [];
+    nest = [];
+    vars = [];
+	var word = false;
+	var input = program.value;
+	var out = "";
+	compat.innerHTML = twemoji.parse(input);
+	for(var i = 0;i<input.length;i+=2) {
+		var code = input.charCodeAt(i);
+		var code2 = input.charCodeAt(i+1);
+		var string = "";
+		var integer = "";
+		var operator = "";
+		var variable = "";
+		var end="";
+		var func = "";
+		var conditional = "";
+		
+		
+		if(code == 55356) {
+			if(code2 >= 57157 && code2 <= 57208) {
+				var letter = code2-57092;
+				if(letter > 90) letter += 6;
+				string = String.fromCharCode(letter);
+			
+			}
+			else if(code2 >= 57105 && code2 <= 57114) {
+				integer = code2-57105;
+			}
+			else {
+			for(var x in ops) {
+				if(code2==ops[x][0]) { operator = ops[x][1];break;}
+			}
+			}
+		}
+		else if(code == 55357) {
+			if(code2 == 56442) end = ";"
+			else if(code2 == 56446) string = " ";
+			else if(code2 == 56873) {
+				conditional = con("if");
+			}
+			else if(code2 == 56834) {
+				conditional = con("while");
+			}
+			else if(code2 == 56840) {
+				if(nest[nest.length-1] == "ifif") {
+				conditional = con("if") + "else{";
+				con("if");
+				con("if");
+				}
+			}
+			else if(code2 == 56839) {
+				if(nest[nest.length-1] == "ifif") {
+				conditional = con("if") + "else " + con("if");
+				}
+			}
+			else if(code2 == 56369) string="Zsa Zsa";
+			else if(code2 == 56367) string="Noel";
+			else if(code2 >= 56320 && code2 <= 56345) {
+				var v = String.fromCharCode(code2-56255);
+				variable = v;
+				if(input.charCodeAt(i+2) == 55357 && input.charCodeAt(i+3) == 56393) {
+					variable += "=";
+					if(vars.indexOf(v)==-1) {
+					variable = "var "+variable;
+					vars.push(v);
+					}
+					i+=2;
+				}
+			}
+			else {
+			for(var x in ops2) {
+				if(code2 == ops2[x][0]) {operator = ops2[x][1];break;}
+			} 
+				if(operator == "") {
+				for(var x in funcs) {
+					if(code2 == funcs[x][0]) {func = fun(funcs[x][1]);break;}
+				}
+				}
+			
+			}
+			
+		}
+		
+		
+		if(!word && string.length > 0) {
+		word = true;
+		out += '"';
+	}
+	else if(word && string.length == 0) {
+		word = false;
+		out += '"';
+		
+	}
+	out+=string+integer+operator+variable+func+conditional+end;
+	}
+	output.textContent = out;
+}
+
+function fun(type) {
+if(context[context.length-1] == type) {
+	context.pop();
+	return ")";
+}
+	context.push(type)
+	return type+"(";
+}
+
+function con(type) {
+	if(nest[nest.length-1] == type+type) {
+		nest.pop();
+		return "}";
+	}
+	if(nest[nest.length-1] == type) {
+		nest[nest.length-1] = type+type;
+		return "){";
+	}
+	nest.push(type);
+	return type+"(";
+}
+
+function check() {
+var input = program.value;
+	var out = "";
+	for(var i = 0;i<input.length;i++) {
+		out += input.charCodeAt(i) + ", ";
+	}
+	debug.textContent = out;
+}
+
+function addSymbol(emoji,value,c) {
+	var s = document.createElement("span");
+	s.textContent = emoji;
+	s.style.cursor = "pointer";
+	s.id = emoji;
+	s.className = "emoji";
+	s.onclick = function() { insert(this.id) };
+	c.appendChild(s);
+if(value!=="") {
+	var s2 = document.createElement("span");
+	s2.textContent = "-"+ value;
+	c.appendChild(s2);
+}
+
+}
+
+function insert(t) {
+	var v = program.value;
+	var p = program.selectionStart;
+	program.value = v.substring(0,p)+t+v.substring(p,v.length);
+	run();
+	program.focus();
+	program.setSelectionRange(p+t.length,p+t.length);
+}
+
+function convert() {
+	var emojis = document.getElementsByClassName("emoji");
+	if(toggle.checked) {
+		compat.hidden = false;
+		for(var x = 0;x<emojis.length;x++) {
+				emojis[x].innerHTML = twemoji.parse(emojis[x].id);
+		}
+	}
+	else {
+		compat.hidden = true;
+		for(var x = 0;x<emojis.length;x++) {
+			emojis[x].innerHTML = emojis[x].id;
+		}
+	}
+}
+
+function showCodes() {
+	debug.hidden = characters.checked ? false : true;
+}
+</script>
+</head>
+<body>
+<h1 id="header">Ox++ </h1>
+<input type="text" id="program" oninput="run()" style="font-size:54" size=25 ></input>
+<div id="compat" style="font-size:54" hidden></div>
+<div><input style="color:green;background:#EEDDFF;font-size:36" type="submit" value="Run" onclick="eval(output.textContent)" />
+<input id ="toggle" type="checkbox" onchange="convert()" />I can't see emoji
+<input id="characters" type="checkbox" onchange="showCodes()" />Show character codes<select id="programs" onchange="loadProgram()"><option>--Load Program--</option></select><span id="desc" style="font-family:arial"></span></div>
+<div id="debug" hidden></div>
+<code id="output" style="font-size:24"></code>
+<div id="letters"></div>
+<div id="variables"></div>
+<div id="numbers"></div>
+<div id="logic"></div>
+<div id="math"></div>
+<div id="syntax"></div>
+<div id="functions"></div>
+<div id="conditionals"></div>
+<script type="text/javascript">
+addSymbol(String.fromCharCode(55357, 56322),"",header);
+addSymbol(String.fromCharCode(55357, 56397),"",header);
+for(var i = 0;i<53;i++) {
+	var emoji = String.fromCharCode(55356,57157+i);
+	var letter = '"'+String.fromCharCode(65+i + 6*(i>25))+'"';
+	if(i==52) {
+		emoji = String.fromCharCode(55357,56446);
+		letter = "Space";
+	}
+	addSymbol(emoji,letter,letters);
+}
+
+for(var i = 0;i<27;i++) {
+	var emoji = String.fromCharCode(55357,56320+i);
+	var letter = String.fromCharCode(i+65);
+	if(i==26) {
+		emoji = String.fromCharCode(55357,56393);
+		letter = "=";
+	}
+	addSymbol(emoji, letter, variables);
+}
+
+for(var i = 0;i<10;i++) {
+	var emoji = String.fromCharCode(55356,57105+i);
+	var letter = ""+i;
+	addSymbol(emoji,letter,numbers);
+}
+
+for(var i = 6;i<ops2.length;i++) {
+	var emoji = String.fromCharCode(55357,ops2[i][0]);
+	var symbol = ops2[i][1];
+	addSymbol(emoji,symbol,logic);
+}
+
+for(var i = 0;i<6;i++) {
+	var emoji = String.fromCharCode(55357,ops2[i][0]);
+	var symbol = ops2[i][1];
+	addSymbol(emoji,symbol,math);
+}
+for(var i = 0;i<ops.length;i++) {
+	var emoji = String.fromCharCode(55356,ops[i][0]);
+	var symbol = ops[i][1];
+	addSymbol(emoji,symbol,syntax);
+	}
+	addSymbol(String.fromCharCode(55357,56442),";",syntax);
+	
+for(var x in funcs) {
+	var emoji = String.fromCharCode(55357,funcs[x][0]);
+	var name = funcs[x][1];
+	addSymbol(emoji,name,functions);
+}
+
+
+var c = [[56873,"if"],[56834,"while"],[56840,"else"],[56839,"else if"]];
+for(var x in c) {
+	var emoji = String.fromCharCode(55357,c[x][0]);
+	var val = c[x][1];
+	addSymbol(emoji,val,conditionals);
+}
+
+
+</script>
+</body>
+</html>			
