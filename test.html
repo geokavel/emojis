@@ -1,0 +1,188 @@
+<html>
+<head>
+<script src="//twemoji.maxcdn.com/twemoji.min.js"></script>
+</head>
+<body>
+<p><strong>Can't see emoji? Click <a href="https://geokavel.github.io/emojis/emoji.html">here</a>.</strong></p>
+
+<p>You will simulate a vending machine. The items are 56 different emojis, which can be represented as two surrogate UTF-8 characters, from: 🍅(U+D83C U+DF45) to 🍼
+(U+D83C U+DF7C). In HTML these emojis can be represented in UTF-16 form as <strong>&amp;#x1F345</strong> through <strong>&amp;#x1F37C</strong>. In base 10 the first UTF-8 character has value <strong>55356</strong>. The value of the second character ranges from <strong>57157</strong> to <strong>57212</strong>. <a href="http://cjam.aditsu.net/#code=56%7B%5B57157%2B%2055356%5C%5D%3Ac%7D%2F">Here</a> is a CJam program that generates all the relevant emojis. To avoid confusion, this challenge will be scored in <strong>characters, not bytes</strong>. Some emojis are 2 characters, some are 3. <a href="http://www.lettercount.com">http://www.lettercount.com</a> will give you an accurate count for this challenge.</p>
+
+<h2>Pricing 💵💵💵</h2>
+
+<p>There are 8 different price categories:</p>
+
+<ul>
+<li>$1.00 : 🍅🍆🍇🍈🍉🍊🍋</li>
+<li>$1.50 : 🍌🍍🍎🍏🍐🍑🍒</li>
+<li>$2.00 : 🍓🍔🍕🍖🍗🍘🍙</li>
+<li>$2.50 : 🍚🍛🍜🍝🍞🍟🍠</li>
+<li>$3.00 : 🍡🍢🍣🍤🍥🍦🍧</li>
+<li>$3.50 : 🍨🍩🍪🍫🍬🍭🍮</li>
+<li>$4.00 : 🍯🍰🍱🍲🍳🍴🍵</li>
+<li>$4.50 : 🍶🍷🍸🍹🍺🍻🍼 </li>
+</ul>
+
+<h2>Displaying the Vending Machine</h2>
+
+<p>This is what the user sees when the program starts and after making a purchase. You can use regular numbers instead of emoji numbers, but emoji numbers have the benefit of being the same width as other emojis. If you use emoji numbers you can subtract <strong>14 characters</strong> from your score, because emoji numbers are 3 characters each.</p>
+
+<pre><code>  1️⃣2️⃣3️⃣4️⃣5️⃣6️⃣7️⃣
+A 🍅🍆🍇🍈🍉🍊🍋
+B 🍌🍍🍎🍏🍐🍑🍒
+C 🍓🍔🍕🍖🍗🍘🍙
+D 🍚🍛🍜🍝🍞🍟🍠
+E 🍡🍢🍣🍤🍥🍦🍧
+F 🍨🍩🍪🍫🍬🍭🍮
+G 🍯🍰🍱🍲🍳🍴🍵
+H 🍶🍷🍸🍹🍺🍻🍼 
+</code></pre>
+
+<p>If the user enters <code>G5</code> that selects 🍳. Entering <code>E6</code> selects 🍦.</p>
+
+<h2>Adding Cash 💸💸💸</h2>
+
+<p>To add money, the user should input <code>/</code> and then the code for a coin or bill. The coins are (N)ickel ($0.05), (D)ime ($0.10), and (Q)uarter ($0.25). The bills are (O)ne ($1.00), (F)ive ($5.00), (T)en ($10.00). Every time the user adds a bill or coin, the program should output <code>Balance: [New Balance]</code>. Only one bill or coin can be added each time.Here is an example containing three lines of input:</p>
+
+<pre><code>/D
+Balance: $0.10
+/Q
+Balance: $0.35
+/F
+Balance: $5.35
+</code></pre>
+
+<h2>Selecting Items</h2>
+
+<p>The user selects an item by entering the item code, like <code>B2</code> or <code>C3</code>. If the user has not added any money, the program should output <code>Item Cost: [Cost of Item]</code>. If the user has added money, but it is not enough to buy the item, the output should be <code>Insufficient Funds. Item Cost: [Cost of Item]</code>. If the user did add enough money, the program should output: <code>Item at [Item Location] Purchased. Remaining Balance: [Balance - Cost of Item]</code>. Then on its own line, print out the emoji of the purchased item. Then print out the entire vending machine (See "Displaying the Vending Machine") with the purchased item replaced with 🚫(U+D83D U+DEAB) Base 10: (55357 57003).</p>
+
+<h2>Ending the Program</h2>
+
+<p>If the user buys an item which brings his/her balance down to $0.00, the program should automatically terminate. Alternatively, if the user enters "Done" at any time, the program must give the user his/her remaining balance in change. Change must be in only Nickels, Dimes, and Quarters, and must be the smallest amount of coins possible. For example if the remaining balance is $1.45, the output should be <code>QQQQQDD</code>.</p>
+
+<h2>Sample Run </h2>
+
+<p>(Input starts with "-")</p>
+
+<pre><code>  1️⃣2️⃣3️⃣4️⃣5️⃣6️⃣7️⃣
+A 🍅🍆🍇🍈🍉🍊🍋
+B 🍌🍍🍎🍏🍐🍑🍒
+C 🍓🍔🍕🍖🍗🍘🍙
+D 🍚🍛🍜🍝🍞🍟🍠
+E 🍡🍢🍣🍤🍥🍦🍧
+F 🍨🍩🍪🍫🍬🍭🍮
+G 🍯🍰🍱🍲🍳🍴🍵
+H 🍶🍷🍸🍹🍺🍻🍼  
+-E1
+Item Cost: $3.00
+-/F
+Balance: $5.00
+-E1
+Item at E1 Purchased. Remaining Balance: $2.00
+🍡 
+  1️⃣2️⃣3️⃣4️⃣5️⃣6️⃣7️⃣
+A 🍅🍆🍇🍈🍉🍊🍋
+B 🍌🍍🍎🍏🍐🍑🍒
+C 🍓🍔🍕🍖🍗🍘🍙
+D 🍚🍛🍜🍝🍞🍟🍠
+E 🚫🍢🍣🍤🍥🍦🍧
+F 🍨🍩🍪🍫🍬🍭🍮
+G 🍯🍰🍱🍲🍳🍴🍵
+H 🍶🍷🍸🍹🍺🍻🍼
+-Done
+QQQQQQQQ
+</code></pre>
+
+<h2>Invalid Codes</h2>
+
+<ul>
+<li>If the input starts with <code>/</code> but is not a valid money input, output
+<code>Money not Accepted</code>.</li>
+<li>If the input is an item that has already been purchased, output <code>Item out of stock</code></li>
+<li>If the input is a digit-letter combination that is not in range (like <code>A0</code> or <code>J2</code>, output "Invalid code"</li>
+<li>For all other invalid input, output "Error"</li>
+</ul>
+
+<h2>Bonus (-15%) : Jam</h2>
+
+<p>When vending an item, there is a 10% chance the machine will jam, and the item gets stuck. Output <code>JAM!!!</code> one time. In this case the user must input "punch" or "kick". Each time the user does so, there is a 20% chance that the item will break free, and vend as normal. Until the jam clears, the only inputs recognized are "punch" and "kick". All other inputs do nothing.
+Here is a sample:</p>
+
+<pre><code>-A4
+Item at A4 purchased. Remaining Balance: $1.00
+JAM!!!
+-punch
+-kick
+-kick
+-punch
+-punch
+🍚
+</code></pre>
+
+<p>(The jam has been cleared. Resume as normal.)</p>
+
+<h2>Bonus (-10%) : ID</h2>
+
+<p>If the user tries to buy an alcoholic beverage (any item on the last row except the baby bottle), you must demand proof of age. To do so, you ask the user to multiply two random numbers between 13 and 19 (inclusive). Output <code>ID required: [13-19]x[13-19] = ?</code>. If the user answers correctly, the purchase can go through. If not, print 🔞(U+D83D U+DD1E) base 10: (55357 56606) </p>
+
+<h2>Alternative Challenge : Minecraft </h2>
+
+<p>This challenge seems like something possible in Minecraft. To successfully create a Minecraft version of this program, the player must</p>
+
+<ul>
+<li>Have an 8x7 grid to select from 56 unique items</li>
+<li>Be able to add money to the balance (Maybe use different types of stones for the different denominations described above.)</li>
+<li>Give the user the item he/she selects if they have put in enough "money"</li>
+<li>Return the user the appropriate amount of change at the end.</li>
+</ul>
+
+<h2>Compatibility Mode</h2>
+
+<ul>
+<li><h3>I can only take input at the beginning of the program</h3>
+
+<ul><li>Not to worry, you can make a program that takes all input up front. If your program has not terminated after evaluating all input, assume that "Done" is called at the end. If you do this method, you will not be eligible for any bonuses.</li></ul></li>
+<li><h3>I can't view/output emojis</h3>
+
+<ul><li>You can copy and paste your input and output into this Stack Snippet (or <a href="https://geokavel.github.io/emojis/evaluate.html">here</a>). It can understand both unicode emojis and HTML codes for emojis. If your output looks correct on this page, your program passes. Try pasting in some of the sample input/output to see how it looks.</li></ul></li>
+</ul>
+
+<p><div class="snippet"><div class="snippet-code" style="display: block;"><pre class="lang-js snippet-code-js prettyprint prettyprinted" style=""><code><span class="kwd">function</span><span class="pln"> parse</span><span class="pun">()</span><span class="pln"> </span><span class="pun">{</span><span class="pln">
+</span><span class="kwd">var</span><span class="pln"> o </span><span class="pun">=</span><span class="pln"> document</span><span class="pun">.</span><span class="pln">getElementById</span><span class="pun">(</span><span class="str">"output"</span><span class="pun">);</span><span class="pln">
+</span><span class="kwd">var</span><span class="pln"> text </span><span class="pun">=</span><span class="pln"> document</span><span class="pun">.</span><span class="pln">getElementById</span><span class="pun">(</span><span class="str">"in"</span><span class="pun">).</span><span class="pln">value</span><span class="pun">;</span><span class="pln">
+o</span><span class="pun">.</span><span class="pln">innerHTML </span><span class="pun">=</span><span class="pln"> text</span><span class="pun">.</span><span class="pln">replace</span><span class="pun">(</span><span class="str">/\n/</span><span class="pln">g</span><span class="pun">,</span><span class="str">"&lt;br/&gt;"</span><span class="pun">).</span><span class="pln">replace</span><span class="pun">(</span><span class="str">/ /</span><span class="pln">g</span><span class="pun">,</span><span class="str">"&amp;nbsp"</span><span class="pun">);</span><span class="pln">
+twemoji</span><span class="pun">.</span><span class="pln">parse</span><span class="pun">(</span><span class="pln">o</span><span class="pun">);</span><span class="pln">
+</span><span class="pun">}</span></code></pre><pre class="lang-html snippet-code-html prettyprint prettyprinted" style=""><code><span class="tag">&lt;head&gt;</span><span class="pln">
+</span><span class="tag">&lt;script</span><span class="pln"> </span><span class="atn">src</span><span class="pun">=</span><span class="atv">"//twemoji.maxcdn.com/twemoji.min.js"</span><span class="tag">&gt;&lt;/script&gt;</span><span class="pln">  
+</span><span class="tag">&lt;/head&gt;</span><span class="pln">
+</span><span class="tag">&lt;body&gt;</span><span class="pln">
+</span><span class="tag">&lt;h1&gt;</span><span class="pln">Emoji to Image</span><span class="tag">&lt;/h1&gt;</span><span class="pln">
+</span><span class="tag">&lt;textarea</span><span class="pln"> </span><span class="atn">id</span><span class="pun">=</span><span class="atv">"in"</span><span class="pln"> </span><span class="atn">rows</span><span class="pun">=</span><span class="atv">"10"</span><span class="pln"> </span><span class="atn">cols</span><span class="pun">=</span><span class="atv">"50"</span><span class="tag">&gt;&lt;/textarea&gt;</span><span class="pln">
+</span><span class="tag">&lt;input</span><span class="pln"> </span><span class="atn">type</span><span class="pun">=</span><span class="atv">"submit"</span><span class="pln"> </span><span class="atn">onclick</span><span class="pun">=</span><span class="atv">"</span><span class="pln">parse</span><span class="pun">()</span><span class="atv">"</span><span class="tag">&gt;</span><span class="pln">
+</span><span class="tag">&lt;div</span><span class="pln"> </span><span class="atn">id</span><span class="pun">=</span><span class="atv">"output"</span><span class="tag">&gt;&lt;/div&gt;</span><span class="pln">
+</span><span class="tag">&lt;/body&gt;</span></code></pre><div class="snippet-result"><div class="snippet-ctas"><button type="button"><span class="icon-play-white _hover"></span><span> Run code snippet</span></button><input class="copySnippet btn-secondary" type="button" value="Copy snippet to answer" style="display: none;"><button type="button" class="hideResults btn-clear" style="display: none;">Hide results</button><div class="popout-code"><a class="snippet-expand-link">Expand snippet</a></div></div><div class="snippet-result-code" style="display: none;"><iframe name="sif183" sandbox="allow-forms allow-modals allow-scripts" class="snippet-box-edit" frameborder="0"></iframe></div></div></div></div></p>
+
+<p><sup><a href="#" class="edit-snippet" data-id="0">edit the above snippet</a></sup></p>
+
+<p>Here is an abbreviated compatibility-mode version of the vending machine display that you can test in the Stack Snippet:</p>
+
+<pre><code>   &amp;#x31&amp;#x20E3&amp;#x32&amp;#x20E3&amp;#x33&amp;#x20E3&amp;#x34&amp;#x20E3&amp;#x35&amp;#x20E3...
+A&amp;#x1F345&amp;#x1F346&amp;#x1F347&amp;#x1F348&amp;#x1F349...
+B 
+...
+</code></pre>
+
+<ul>
+<li><h3>I can output emojis, but not to STDOUT.</h3>
+
+<ul><li>Seemingly, the Mac OS X Terminal is the only one known to be able to output emojis. If you are not able to output emojis in your terminal, your other options are
+
+<ul><li>Send all output to a file.</li>
+<li>Display all output in a window.</li>
+<li>Use the technique described in "I can't view/output emojis".</li></ul></li></ul></li>
+</ul>
+<script>
+twemoji.parse(document.body);
+</script>
+</body>
+</html>
